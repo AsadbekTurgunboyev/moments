@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "1085034708401",
+    "firebase_url": "https://birthday-94559-default-rtdb.firebaseio.com",
+    "project_id": "birthday-94559",
+    "storage_bucket": "birthday-94559.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085034708401:android:20d8d5d9bfadb01fead190",
+        "android_client_info": {
+          "package_name": "com.example.birthdayreminder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085034708401-4qivl3in4loj2hbm3fq9ouq062latl3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA05vHy7gTTx6LiC9CLuKslfsJqpqsr-Ok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085034708401-4qivl3in4loj2hbm3fq9ouq062latl3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085034708401:android:61572de462319113ead190",
+        "android_client_info": {
+          "package_name": "com.example.lahza"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1085034708401-4qivl3in4loj2hbm3fq9ouq062latl3c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA05vHy7gTTx6LiC9CLuKslfsJqpqsr-Ok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1085034708401-4qivl3in4loj2hbm3fq9ouq062latl3c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
