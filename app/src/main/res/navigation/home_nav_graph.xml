@@ -25,4 +25,9 @@
         android:name="com.example.lahza.ui.home.post.PostFragment"
         android:label="fragment_post"
         tools:layout="@layout/fragment_post" />
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.lahza.ui.home.category.CategoryFragment"
+        android:label="fragment_category"
+        tools:layout="@layout/fragment_category" />
 </navigation>

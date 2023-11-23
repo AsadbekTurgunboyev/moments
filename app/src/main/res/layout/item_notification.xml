@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_10sdp"
+    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/personImage"
+        android:layout_width="@dimen/_35sdp"
+        android:src="@drawable/rasm1"
+        android:layout_height="@dimen/_35sdp"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:id="@+id/reactionUser"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:text="asd started following you"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/followButton"
+        android:layout_width="wrap_content"
+        android:text="Follow"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/likesPostImage"
+        android:layout_width="@dimen/_30sdp"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:src="@drawable/rasm1"
+        android:layout_height="@dimen/_30sdp"/>
+
+</LinearLayout>

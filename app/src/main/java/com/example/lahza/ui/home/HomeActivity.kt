@@ -2,11 +2,13 @@ package com.example.lahza.ui.home
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.lahza.R
 import com.example.lahza.databinding.ActivityHomeBinding
+import com.google.firebase.messaging.FirebaseMessaging
 
 class HomeActivity : AppCompatActivity() {
 
@@ -22,5 +24,14 @@ class HomeActivity : AppCompatActivity() {
 
         viewBinding.bottomNavigation.setupWithNavController(navController)
 
+        getFCMToken()
+    }
+
+    fun getFCMToken(){
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (it.isSuccessful){
+                Log.d("tekshirish", "getFCMToken: ${it.result}")
+            }
+        }
     }
 }

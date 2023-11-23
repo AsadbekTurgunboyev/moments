@@ -3,13 +3,12 @@ package com.example.lahza.ui.home.profile
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.example.lahza.databinding.FragmentProfileBinding
+import com.example.lahza.domain.models.FollowersHistoryModel
 import com.example.lahza.domain.models.LoginModel
 import com.example.lahza.domain.models.post.PostModel
 import com.example.lahza.domain.preference.UserPreferenceManager
@@ -20,6 +19,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class ProfileFragment : Fragment() {
 
@@ -27,7 +28,7 @@ class ProfileFragment : Fragment() {
     lateinit var viewBinding: FragmentProfileBinding
     lateinit var databaseReference: DatabaseReference
     lateinit var profileDatabaseReference: DatabaseReference
-    var key : String? = null
+    var key: String? = null
     lateinit var userPreferenceManager: UserPreferenceManager
     val listener by lazy {
         object : ValueEventListener {
@@ -48,13 +49,21 @@ class ProfileFragment : Fragment() {
         object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     val customColor = Color.parseColor("#C9CACC")
-                    viewBinding.buttonFollow.setCardBackgroundColor(ColorStateList.valueOf(customColor))
+                    viewBinding.buttonFollow.setCardBackgroundColor(
+                        ColorStateList.valueOf(
+                            customColor
+                        )
+                    )
                     viewBinding.textForFollowing.text = "Unfollow"
-                }else{
+                } else {
                     val customColor = Color.parseColor("#42A5F5")
-                    viewBinding.buttonFollow.setCardBackgroundColor(ColorStateList.valueOf(customColor))
+                    viewBinding.buttonFollow.setCardBackgroundColor(
+                        ColorStateList.valueOf(
+                            customColor
+                        )
+                    )
                     viewBinding.textForFollowing.text = "Follow"
                 }
             }
@@ -69,8 +78,7 @@ class ProfileFragment : Fragment() {
     val buttonFollow by lazy {
         object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
-
+                if (snapshot.exists()) {
 
                     for (childSnapshot in snapshot.children) {
                         val userKey = childSnapshot.child("user").getValue(String::class.java)
@@ -83,15 +91,16 @@ class ProfileFragment : Fragment() {
                     key?.let { removeFollowingOwn(it) }
                     viewBinding.textForFollowing.text = "Follow"
 
-                }else{
+                } else {
                     val map = HashMap<String, String>()
                     userPreferenceManager.getUserKey()?.let { map.put("user", it) }
                     key?.let {
 
-                            addFollowingOwn(it)
+                        addFollowingOwn(it)
+                        addFollowingHistory(it)
                         databaseReference.child(it).child("followers").push().setValue(map)
 
-                        }
+                    }
 
                     viewBinding.textForFollowing.text = "Unfollow"
                 }
@@ -103,13 +112,14 @@ class ProfileFragment : Fragment() {
 
         }
     }
+
     val followingCount by lazy {
         object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     val number = snapshot.childrenCount
                     viewBinding.followingNumbersTextView.text = number.toString()
-                }else{
+                } else {
                     viewBinding.followingNumbersTextView.text = "0"
 
                 }
@@ -121,21 +131,20 @@ class ProfileFragment : Fragment() {
 
         }
     }
+
     val postModelList = arrayListOf<PostModel>()
 
     val profilePostValue by lazy {
         object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 postModelList.clear()
-                for (ds in snapshot.children){
-                    val model  = ds.getValue(PostModel::class.java)
+                for (ds in snapshot.children) {
+                    val model = ds.getValue(PostModel::class.java)
 
                     if (model != null) {
                         postModelList.add(model)
                     }
                 }
-                Log.d("tekshirish", "onDataChange: ${snapshot.childrenCount}")
-
                 viewBinding.photosNumberTextView.text = "${snapshot.childrenCount}"
                 viewBinding.ownProfileRecy.adapter = ProfilePostAdapter(postModelList)
             }
@@ -147,12 +156,12 @@ class ProfileFragment : Fragment() {
         }
     }
     val followersCount by lazy {
-        object : ValueEventListener{
+        object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     val number = snapshot.childrenCount
                     viewBinding.followersNumberTextView.text = number.toString()
-                }else{
+                } else {
                     viewBinding.followersNumberTextView.text = "0"
 
                 }
@@ -170,7 +179,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        viewBinding = FragmentProfileBinding.inflate(layoutInflater,container,false)
+        viewBinding = FragmentProfileBinding.inflate(layoutInflater, container, false)
         return viewBinding.root
     }
 
@@ -184,21 +193,25 @@ class ProfileFragment : Fragment() {
         userPreferenceManager = UserPreferenceManager(requireContext())
 
 
-        if (key == null){
+        if (key == null) {
             viewBinding.buttonFollow.visibility = View.GONE
             viewBinding.buttonEdit.visibility = View.VISIBLE
-            userPreferenceManager.getUserKey()?.let { databaseReference.child(it).addListenerForSingleValueEvent(listener)
+            userPreferenceManager.getUserKey()?.let {
+                databaseReference.child(it).addListenerForSingleValueEvent(listener)
                 databaseReference.child(it).child("followers").addValueEventListener(followersCount)
                 profileDatabaseReference.child(it).addValueEventListener(profilePostValue)
                 databaseReference.child(it).child("following").addValueEventListener(followingCount)
             }
-        }else{
+        } else {
             viewBinding.buttonFollow.visibility = View.VISIBLE
             viewBinding.buttonEdit.visibility = View.GONE
 
 
-            key?.let { databaseReference.child(it).addValueEventListener(listener)
-                val query: Query = databaseReference.child(it).child("followers").orderByChild("user").equalTo(userPreferenceManager.getUserKey())
+            key?.let {
+                databaseReference.child(it).addValueEventListener(listener)
+                val query: Query =
+                    databaseReference.child(it).child("followers").orderByChild("user")
+                        .equalTo(userPreferenceManager.getUserKey())
                 query.addValueEventListener(isFollowOrUnfollow)
                 profileDatabaseReference.child(it).addValueEventListener(profilePostValue)
 
@@ -211,27 +224,46 @@ class ProfileFragment : Fragment() {
 
         viewBinding.buttonFollow.setOnClickListener {
             key?.let {
-                val query: Query = databaseReference.child(it).child("followers").orderByChild("user").equalTo(userPreferenceManager.getUserKey())
+                val query: Query =
+                    databaseReference.child(it).child("followers").orderByChild("user")
+                        .equalTo(userPreferenceManager.getUserKey())
                 query.addListenerForSingleValueEvent(buttonFollow)
             }
         }
     }
 
 
-    fun addFollowingOwn(key: String){
+    fun addFollowingOwn(key: String) {
         val map = HashMap<String, String>()
         map["user"] = key
+
+
         userPreferenceManager.getUserKey()
-            ?.let { databaseReference.child(it).child("following").push().setValue(map) }
+            ?.let {
+                databaseReference.child(it).child("following").push().setValue(map)
+            }
     }
 
-    fun removeFollowingOwn(key: String){
+    fun addFollowingHistory(key: String) {
+        val followingHistoryModel = FollowersHistoryModel(
+            key = userPreferenceManager.getUserKey(),
+            time = getCurrentTime(),
+            follow = true,
+            like = false
+        )
+        databaseReference.child(key).child("history").push().setValue(followingHistoryModel)
+
+    }
+
+    fun removeFollowingOwn(key: String) {
 
         val query: Query? = userPreferenceManager.getUserKey()
-            ?.let { databaseReference.child(it).child("following").orderByChild("user").equalTo(key) }
+            ?.let {
+                databaseReference.child(it).child("following").orderByChild("user").equalTo(key)
+            }
         query?.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
+                if (snapshot.exists()) {
                     for (childSnapshot in snapshot.children) {
                         val userKey = childSnapshot.child("user").getValue(String::class.java)
                         if (userKey == key) {
@@ -251,5 +283,10 @@ class ProfileFragment : Fragment() {
     }
 
 
+    private fun getCurrentTime(): String {
+        val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm")
+        val currentDate = sdf.format(Date())
 
+        return currentDate.toString()
+    }
 }

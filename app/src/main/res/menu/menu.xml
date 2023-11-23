@@ -10,6 +10,7 @@
         android:icon="@drawable/ic_light_search"
         android:title="Search" />
     <item
+        android:id="@+id/categoryFragment"
         android:icon="@drawable/ic_light_folder"
         android:title="Favourite" />
     <item

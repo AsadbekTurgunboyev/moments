@@ -18,9 +18,9 @@
     </com.google.android.material.card.MaterialCardView>
 
     <TextView
+        android:id="@+id/personName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Salom"
         android:layout_marginStart="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
         app:layout_constraintStart_toEndOf="@+id/materialCardView"

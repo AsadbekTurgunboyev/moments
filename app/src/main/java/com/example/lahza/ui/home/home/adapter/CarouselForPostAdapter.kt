@@ -7,8 +7,9 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.lahza.R
+import com.example.lahza.domain.models.post.PostModel
 
-class CarouselForPostAdapter(val list: List<Int>): RecyclerView.Adapter<CarouselForPostAdapter.CarouselViewHolder>() {
+class CarouselForPostAdapter(val list: List<PostModel>): RecyclerView.Adapter<CarouselForPostAdapter.CarouselViewHolder>() {
 
     inner class CarouselViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val image: ImageView = itemView.findViewById(R.id.list_item_image)
@@ -24,6 +25,6 @@ class CarouselForPostAdapter(val list: List<Int>): RecyclerView.Adapter<Carousel
     }
 
     override fun onBindViewHolder(holder: CarouselViewHolder, position: Int) {
-        Glide.with(holder.itemView.context).load(list[position]).into(holder.image)
+        Glide.with(holder.itemView.context).load(list[position].urlImage).into(holder.image)
     }
 }
