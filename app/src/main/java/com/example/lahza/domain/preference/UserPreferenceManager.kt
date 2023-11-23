@@ -10,6 +10,7 @@ class UserPreferenceManager(private val context: Context) {
         val USER_NAME = "user_name"
         val KEY = "key"
         val PHONE = "phone"
+        val FCM_TOKEN = "fcm_token"
     }
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
@@ -25,5 +26,10 @@ class UserPreferenceManager(private val context: Context) {
     }
 
     fun getUserKey(): String? = prefs.getString(KEY,null)
+    fun saveFCMToken(result: String?) {
+        prefs.edit().putString(FCM_TOKEN,result).apply()
+    }
+
+    fun getFCMToken(): String? = prefs.getString(FCM_TOKEN,null)
 
 }

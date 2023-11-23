@@ -3,6 +3,7 @@ package com.example.lahza.ui.home.profile
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,14 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.getValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -252,7 +261,27 @@ class ProfileFragment : Fragment() {
             like = false
         )
         databaseReference.child(key).child("history").push().setValue(followingHistoryModel)
+        databaseReference.child(key).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
 
+                if (snapshot.exists()){
+                    val model = snapshot.getValue<LoginModel>()
+                    model?.name?.let {
+                        model.fcm_token?.let { it1 ->
+                            Log.d("jonatma", "onDataChange: $it1")
+                            sendNotification(
+                                it1,
+                                it,"${model.username} started following you")
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
     }
 
     fun removeFollowingOwn(key: String) {
@@ -288,5 +317,53 @@ class ProfileFragment : Fragment() {
         val currentDate = sdf.format(Date())
 
         return currentDate.toString()
+    }
+
+    fun sendNotification(targetToken: String, title: String, message: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val url = URL("https://fcm.googleapis.com/fcm/send")
+                val httpURLConnection =
+                    withContext(Dispatchers.IO) {
+                        url.openConnection()
+                    } as HttpURLConnection
+                httpURLConnection.apply {
+                    doOutput = true
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    setRequestProperty("Authorization", "key=AAAA_KEbvbE:APA91bEYlaumMW6GBxYypDYB8mL8Mk3hkt-znrgwIr6Weyhr6oV3HXNCSRUDbKs8E8b6KAABCpUKPAKJ2MU4OnwhnXY1y3VJukOaAikpaLmWUf57gHWiJsTwfyNqcaa27leIz9K_sccY")
+                }
+
+                val notificationPayload = """
+                {
+                  "to": "$targetToken",
+                  "notification": {
+                    "title": "$title",
+                    "body": "$message"
+                  }
+                }
+            """.trimIndent()
+
+                OutputStreamWriter(httpURLConnection.outputStream).apply {
+                    write(notificationPayload)
+                    flush()
+                    close()
+                }
+
+                val responseCode = httpURLConnection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    // Handle success
+                    val response = httpURLConnection.inputStream.bufferedReader().use { it.readText() }
+                    Log.d("tekshirish", "sendNotification: $response")
+                    withContext(Dispatchers.Main) {
+                        // Update UI or notify user
+                    }
+                } else {
+                    // Handle error
+                }
+            } catch (e: Exception) {
+                // Handle exception
+            }
+        }
     }
 }

@@ -8,6 +8,8 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.lahza.R
 import com.example.lahza.databinding.ActivityHomeBinding
+import com.example.lahza.domain.preference.UserPreferenceManager
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 
 class HomeActivity : AppCompatActivity() {
@@ -27,11 +29,21 @@ class HomeActivity : AppCompatActivity() {
         getFCMToken()
     }
 
-    fun getFCMToken(){
+    private fun getFCMToken(){
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if (it.isSuccessful){
-                Log.d("tekshirish", "getFCMToken: ${it.result}")
+                saveWriteFCMToken(it.result)
             }
         }
+    }
+
+    private fun saveWriteFCMToken(result: String?) {
+
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users")
+        val userPreferenceManager = UserPreferenceManager(this)
+        userPreferenceManager.saveFCMToken(result)
+        val data = HashMap<String, String>()
+        result?.let { data.put("fcm_token", it) }
+        userPreferenceManager.getUserKey()?.let { databaseReference.child(it).child("fcm_token").setValue(result) }
     }
 }

@@ -8,6 +8,7 @@ data class LoginModel(
     var key: String? ="",
     val name: String? = "",
     val phone: String? = "",
+    val fcm_token: String? = "",
     val birthday: String? = "",
     var username: String? = "",
     val followingCount: Int? = 0,
